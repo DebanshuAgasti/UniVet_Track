@@ -25,9 +25,17 @@ const UserPage = () => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+    // Enforce input constraints for specific fields
+    let nextValue = files ? files[0] : value;
+
+    // Contact number: allow only digits, max 10
+    if (name === "contact") {
+      nextValue = value.replace(/\D/g, "").slice(0, 10);
+    }
+
     setFormData({
       ...formData,
-      [name]: files ? files[0] : value,
+      [name]: nextValue,
     });
   };
 
@@ -53,8 +61,18 @@ const UserPage = () => {
         <label>Name:</label>
         <input type="text" name="name" onChange={handleChange} required />
 
-        <label>Contact Number:</label>
-        <input type="tel" name="contact" onChange={handleChange} required />
+        <label>Contact Number*</label>
+        <input
+          type="tel"
+          name="contact"
+          value={formData.contact}
+          onChange={handleChange}
+          required
+          inputMode="numeric"
+          maxLength={10}
+          pattern="[0-9]{10}"
+          title="Enter a valid 10-digit contact number"
+        />
 
         <label>Category:</label>
         <select name="category" onChange={handleChange} required>
@@ -99,6 +117,8 @@ const UserPage = () => {
     value={formData.location}
     onChange={handleChange}
     required
+    pattern="https?://.+"
+    title="Enter a valid URL starting with http:// or https://"
   />
   <button
     type="button"
